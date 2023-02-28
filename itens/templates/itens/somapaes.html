@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<header>
+    <title>Home</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    </style>
+</header>
+<body>
+    <h1>Coletar codigos</h1>
+    <label for="coletar"></label>
+    <input type="text" id="coletar" onchange="coletar(this)  ">
+    <label for="valorb">Valor Base:</label>
+    <input type="number" name="valorb" id="valorb" value="1299">
+    <form action="" method="get">
+        <label for="indic">Indice</label>
+        <input type="number" name="indic" id="indic" min="0" value="0" onchange="preenchind(this.value)" onsubmit="">
+        <p></p>
+        <label for="data">Data:</label>
+        <input type="date" name="data" id="data" onchange="preenchdat(this)">
+        <label for="quant">Quantidade:</label>
+        <input type="number" name="quantidade" id="quantidade" onchange="">
+        <fieldset>
+            <legend>Local:</legend>
+            <input type="radio" name="local" id="hospital" value="hospital" onchange="preenchloc(this)">
+            <label for="hospital">Hospital:</label>
+            <input type="radio" name="local" id="posto" value="posto" onchange="preenchloc(this)">
+            <label for="posto">Posto:</label>
+            <input type="radio" name="local" id="psf" value="psf" onchange="preenchloc(this)">
+            <label for="psf">PSF:</label>
+            <input type="radio" name="local" id="cras" value="cras" onchange="preenchloc(this)">
+            <label for="cras">Cras:</label>
+            <input type="radio" name="local" id="reciclagem" value="reciclagem" onchange="preenchloc(this)">
+            <label for="reciclagem">Reciclagem:</label>
+
+        </fieldset>
+        <input type="button" value="Anterior" onclick="botaof('-1')">
+        <input type="button" value="Proximo" onclick="botaof('1')">
+        
+    </form>
+    <p>codigos coletados</p>
+
+    <p id="coletados"></p>
+
+    <script>
+        let codigostt;
+        //solicitaçoes 
+        async function getText(file) {
+            let myObject = await fetch(file);
+            let myText = await myObject.text();
+            return myText;
+        }
+
+        // documentos
+        colet = document.getElementById("coletados");
+        valorpao = 1299
+        //funçoes 
+        async function organizacod() {
+            let myText = await getText("?codigos");
+            num_caracter = myText.length;
+            console.log("len: "+num_caracter+" lin:"+num_caracter/14);
+            cod=[];
+            for (let i = 0;i < num_caracter;i=i+14){
+                let indice =((i/14).toFixed(0));
+                let codit = ""+myText[i+1]+myText[i+2]+myText[i+3]+myText[i+4]+"";
+                let valo = ""+myText[i+5]+myText[i+6]+myText[i+7]+myText[i+8]+myText[i+9]+myText[i+10]+myText[i+11]+"";
+                let pes = (valo/valorpao).toFixed(3);
+                let q=(pes/0.058).toFixed(0);
+                let verificador = myText[i+12];
+                let codigot = ""+myText[i]+codit+valo+verificador;
+                cod[indice]={codigo: codigot,init: myText[i], coditem: codit, valor: valo, dv: verificador, peso:pes, quantidade:q, data: "2023-02-20", local:"hospital"};    
+
+            }
+            //console.table(cod);
+            codigostt=cod;
+            let indi= document.getElementById("indic").value;
+            preenchind(indi);
+        }
+
+        function coletar(ell) {
+            getText("?codigos=" + ell.value);
+            ell.value = "";
+        }
+
+        function preenchind(ell) {
+            
+            let ite = codigostt[ell];
+            
+            let testo =""+somapeso();
+            //for (const iterator of object) {
+                for (const key in ite) {
+                    if (Object.hasOwnProperty.call(ite, key)) {
+                        const element = ite[key];
+                        testo += "" + key +": "+element +" // ";
+                        
+                    }
+                }
+
+                if (Object.hasOwnProperty.call(ite, key="data")) {
+                    document.getElementById(key).value = ite[key];
+                }
+                else{
+                    document.getElementById("data").value = "";
+                }
+                if (Object.hasOwnProperty.call(ite, key="local")){
+                    document.getElementById(ite[key]).checked = true;
+                }else{
+                    document.getElementById("hospital").checked = false;
+                    document.getElementById("psf").checked = false;                            
+                    document.getElementById("posto").checked = false;
+                    document.getElementById("cras").checked = false;
+                    document.getElementById("reciclagem").checked = false;
+                }
+                if (Object.hasOwnProperty.call(ite, key="quantidade" )){
+                    document.getElementById(key).value = ite[key];
+                }
+            colet.innerHTML = testo;
+        }
+        function preenchdat(ell) {
+            let indi= document.getElementById("indic").value;
+            codigostt[indi].data = ell.value;
+            preenchind(indi);
+        }
+        
+        function preenchloc(ell) {
+            let indi= document.getElementById("indic").value;
+            codigostt[indi].local = ell.value;
+            botaof('1'); //preenchind(indi);
+        }
+        function somapeso() {
+            let speso ={hospital:0, posto:0, psf:0, cras:0, reciclagem:0, t:0};
+            let squant = {hospital:0, posto:0, psf:0, cras:0, reciclagem:0, t:0};
+            for (const c of codigostt) {
+                speso.t +=((c.peso*1000)/1000).toFixed(3);
+                squant.t += (c.quantidade)*1;
+                for (const key in speso) {
+                    if (Object.hasOwnProperty.call(speso, key)) {
+                        if (c.local==key){
+                            speso[key] = (speso[key]*1000+c.peso*1000)/1000;
+                            squant[key] += (c.quantidade)*1;
+                        }
+                    }
+                }
+            }
+            console.log(speso,squant);
+            let texto ="";
+            return texto;
+        }
+        function botaof(params) {
+            //console.log(params);
+            let indi= document.getElementById("indic").value;
+            //console.log(indi);
+            if(params > 0 || indi > 0){
+                document.getElementById("indic").value = 1*indi+1*params;
+            }
+            indi= document.getElementById("indic").value;
+            //console.log(indi);
+            preenchind(indi);
+        }
+        organizacod();
+    </script>
+</body>
+</html>
