@@ -1,0 +1,16 @@
+{% extends "itens/home.html" %}
+{% block content %}
+<h1>Extrutura Mercadologica 2020 Lista</h1>
+  {% if mercadologica_list %}
+  <ul style="list-style-type:none;">
+    {% for mercadologica in mercadologica_list %}
+      <li>
+        {{mercadologica.codigo}} - {{mercadologica.descricao}} 
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>Não tem lista Mercadologica</p>
+  {% endif %}
+  Novo
+  {% endblock %}
