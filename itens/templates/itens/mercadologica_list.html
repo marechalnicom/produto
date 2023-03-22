@@ -1,16 +1,75 @@
 {% extends "itens/home.html" %}
+{% block title %}Extrutura Mercadologica 2020{% endblock %}
 {% block content %}
-<h1>Extrutura Mercadologica 2020 Lista</h1>
+<h1>Extrutura Mercadologica 2020</h1>
   {% if mercadologica_list %}
-  <ul style="list-style-type:none;">
-    {% for mercadologica in mercadologica_list %}
-      <li>
-        {{mercadologica.codigo}} - {{mercadologica.descricao}} 
-      </li>
-    {% endfor %}
-  </ul>
+  <main class="container-fluid">
+    <div class="row">
+      <div class="col-sm-5">
+      <h2>Base de dados</h2>
+      <ul class="flex-column" style="list-style-type:none;">
+        {% for mercadologica in mercadologica_list %}
+          <li>
+          {% if mercadologica.codigo != "0" %}
+            {{mercadologica.codigo}} - {% endif %}{{mercadologica.descricao}} <span class="badge bg-info">ID: {{mercadologica.id}}</span>
+          </li>
+        {% endfor %}
+      </ul>
   {% else %}
-    <p>Não tem lista Mercadologica</p>
+        <p>Não tem lista Mercadologica</p>
   {% endif %}
-  Novo
+      <p>Novo</p>
+    </div>
+    <div class="col-sm-5">
+      <h2>Arquivo de referencia</h2>
+      <ul id="refmerc" class="flex-column" style="list-style-type:none;">
+
+      </ul>
+    </div>
+  </div>
+  </main>
+  <script>
+  {% if arqjson %}
+    let arqmerc = '{{ arqjson }}';
+    arqmerc = arqmerc.replaceAll("&quot;",'"');
+    const objarq = JSON.parse(arqmerc);
+    let refmer = document.getElementById('refmerc');
+    let texto="";
+    for (const cr in objarq) {
+      if (Object.hasOwnProperty.call(objarq, cr)) {
+        const cre = objarq[cr];
+        texto += cr+"<br>";
+        for (const gr in cre) {
+          if (Object.hasOwnProperty.call(cre, gr)) {
+            const gru = cre[gr];
+            texto += gru['cod'] + " - " + gr +"<br>";
+            for (const cat in gru) {
+              if (Object.hasOwnProperty.call(gru, cat)) {
+                const ca = gru[cat];
+                if (cat=="tag" || cat=="cod") {
+                  if (cat=="tag"){
+                  texto += "(" +cat + ": Venda " + ca['VENDA'] + "; Margem " + ca['MARGEM']+")<br>";}
+                }else{
+                  texto += ca['cod'] + " - " + cat +"<br>";
+                  for (const c in ca) {
+                    if (Object.hasOwnProperty.call(ca, c)) {
+                      if (c=="tag"|| c=="cod") {
+                      }else{
+                        const f = ca[c];
+                        texto += f['cod'] + " - " + c +"<br>";
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    refmer.innerHTML = texto;
+  {% endif %}
+
+  </script>
   {% endblock %}
+            

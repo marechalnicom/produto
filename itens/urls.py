@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('', views.itens, name="index"),
-    path('em/', views.MecacologicaView.as_view(), name='mercadologica')
+    path('em/', views.MercacologicaView.as_view(), name='mercadologica')
 ]
