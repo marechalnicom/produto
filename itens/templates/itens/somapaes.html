@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<header>
-    <title>Home</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-
-    </style>
-</header>
-<body>
+{% extends "itens/home.html" %}
+{% block title %}Soma pães prefeitura{% endblock %}
+{% block content %}
     <h1>Coletar codigos</h1>
-    <label for="coletar"></label>
-    <input type="text" id="coletar" onchange="coletar(this)  ">
+    <label for="coletar">Coletar codigos</label>
+    <input type="text" id="coletar" name="coletar" onchange="coletar(this)  ">
     <label for="valorb">Valor Base:</label>
     <input type="number" name="valorb" id="valorb" value="1299">
     <form action="" method="get">
@@ -161,5 +153,4 @@
         }
         organizacod();
     </script>
-</body>
-</html>
+  {% endblock %}
