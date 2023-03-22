@@ -15,7 +15,7 @@ class Mercadologica(models.Model):
     parametro = models.BigIntegerField('Margem Parametro', null=True, blank=True)
     decimo = models.IntegerField('Ultimo Número', null=True, blank=True)
     ncm = models.CharField('NCM de referencia', max_length=8, null=True, blank=True)
-    tag = models.ManyToManyField(Tag, blank=True)
+    tag = models.ManyToManyField(Tag)
     def __str__(self):
         if self.superior==0:
             return f"{self.descricao}"
