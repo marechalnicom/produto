@@ -53,11 +53,10 @@ def lerArquivo(caminho):
     return retornaobj
 
 def consultaMercadologica(conteudo=0):
-    print (type(conteudo))
     objcont = json.loads(conteudo)
     m = Mercadologica.objects.filter(codigo=objcont['cod'],descricao=objcont['desc']).values()
     obj: object = {}
-    for i in m:
-        for j in i:
-            obj[j] = i[j]
+    for query in m:
+        for key in query:
+            obj[key] = query[key]
     return obj
