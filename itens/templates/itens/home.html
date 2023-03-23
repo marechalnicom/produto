@@ -9,7 +9,41 @@
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" >
     {% comment %}<!-- Add additional CSS in static file -->{% endcomment %}
     {% load static %}
-    <link rel="stylesheet" href="{% static 'itens/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'itens/css/styles.css' %}">    
+    <script>
+        //getJson("")
+        async function getJson(req) {
+            let myObject = await fetch(req);
+            //console.log(myObject);
+            let myJson = await myObject.json();
+            //console.log(myJson);
+            return myJson;
+        }
+        //async function getText(file) {
+        //    let myObject = await fetch(file);
+        //    let myText = await myObject.text();
+        //    return myText;
+        //    
+        //}
+        //function requisicaojson(url){  
+        //    fetch(url, {
+        //        method: 'get',
+        //    }).then(result => {
+        //        return result.json()
+        //    }).then(data => {
+        //        retornajson(data);
+        //    })
+        //}
+        //function requisicaotext(url){  
+        //    fetch(url, {
+        //        method: 'get',
+        //    }).then(result => {
+        //        return result.text();
+        //    }).then(data => {
+        //        retornatext(data);
+        //    })
+        //}
+    </script>
 </head>
 <body class="container-fluid bg-info">
     <div class="row bg-warning">
@@ -47,40 +81,6 @@
             {% endblock %}
         </div>
     </div>
-    
-<script>
-    //getJson("")
-    async function getJson(req) {
-        let myObject = await fetch(req);
-        console.log(myObject);
-        let myJson = await myObject.json();
-        console.log(myJson);
-        //return myJson;
-    }
-    //async function getText(file) {
-    //    let myObject = await fetch(file);
-    //    let myText = await myObject.text();
-    //    return myText;
-    //    
-    //}
-    //function requisicaojson(url){  
-    //    fetch(url, {
-    //        method: 'get',
-    //    }).then(result => {
-    //        return result.json()
-    //    }).then(data => {
-    //        retornajson(data);
-    //    })
-    //}
-    //function requisicaotext(url){  
-    //    fetch(url, {
-    //        method: 'get',
-    //    }).then(result => {
-    //        return result.text();
-    //    }).then(data => {
-    //        retornatext(data);
-    //    })
-    //}
-</script>
+
 </body>
 </html>
