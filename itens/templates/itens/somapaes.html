@@ -125,7 +125,7 @@
             let speso ={hospital:0, posto:0, psf:0, cras:0, reciclagem:0, t:0};
             let squant = {hospital:0, posto:0, psf:0, cras:0, reciclagem:0, t:0};
             for (const c of codigostt) {
-                speso.t +=((c.peso*1000)/1000).toFixed(3);
+                speso.t +=((c.peso*1000)/1000).toFixed(3)*1;
                 squant.t += (c.quantidade)*1;
                 for (const key in speso) {
                     if (Object.hasOwnProperty.call(speso, key)) {
