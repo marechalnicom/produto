@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Tag(models.Model):
+    #mercadologica = models.ManyToManyField(Mercadologica, blank=True)
     tipo = models.CharField(max_length=50)
     tag = models.CharField(max_length=50)
     detalhe = models.CharField(max_length=50)
@@ -15,7 +16,7 @@ class Mercadologica(models.Model):
     parametro = models.BigIntegerField('Margem Parametro', null=True, blank=True)
     decimo = models.IntegerField('Ultimo Número', null=True, blank=True)
     ncm = models.CharField('NCM de referencia', max_length=8, null=True, blank=True)
-    tag = models.ManyToManyField(Tag)
+    tag = models.ManyToManyField(Tag, blank=True)
     def __str__(self):
         if self.superior==0:
             return f"{self.descricao}"

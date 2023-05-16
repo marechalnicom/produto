@@ -1,28 +1,32 @@
 {% extends "itens/home.html" %}
 {% block title %}Extrutura Mercadologica 2020{% endblock %}
 {% block content %}
-<h1>Extrutura Mercadologica 2020</h1>
-  {% if mercadologica_list %}
+  <h1>Extrutura Mercadologica 2020</h1>
+  <form action="" method="get">
+    <input type="hidden" name="page" value="{{ page_obj.number }}">
+    <label for="ipaginat">Quantidade:</label>
+    <select name="npaginat" id="ipaginat">
+      <option value="15" {% if get.paginat == 15 %}selected {% endif %} >15</option>
+      <option value="30" {% if get.paginat == 30 %}selected {% endif %}>30</option>
+      <option value="50"{% if get.paginat == 50 %}selected {% endif %}>50</option>
+      <option value="100"{% if get.paginat == 100 %}selected {% endif %}>100</option>
+    </select>
+    <label for="ifiltro">Pesquisar:</label>
+    <input type="search" name="nfiltro" id="ifiltro" value="{% if get.filtro %}{{ get.filtro  }}{% endif %}">
+  </form>
+  
   <main class="container-fluid">
     <div class="row">
       <div class="col-sm-5">
       <h2>Base de dados</h2>
+  {% if mercadologica_list %}
       <ul class="flex-column" style="list-style-type:none;">
         {% for mercadologica in mercadologica_list %}
           <li>
           {% if mercadologica.codigo != "0" %}
             {{mercadologica.codigo}} - {% endif %}{{mercadologica.descricao}}
-            <span class="badge bg-info">ID: {{mercadologica.id}}
-            <a 
-            onclick="atualizamercadologica('/admin/itens/mercadologica/{{mercadologica.id}}/change/?_to_field=id&amp;_popup=1',{{mercadologica.id}})"
-            {% comment %}target="_blank" 
-            class="related-widget-wrapper-link change-related" 
-            id="change_id_classificacao"
-            href="/admin/itens/mercadologica/{{mercadologica.id}}/change/?_to_field=id&amp;_popup=1" 
-            data-popup="yes" {% endcomment %}
-            title="Alterar mercadologica selecionado">
-            <img src="/static/admin/img/icon-changelink.svg" alt="Modificar" 
-            data-bs-toggle="modal" data-bs-target="#myModal"></a></span>
+            <span class="badge bg-info">ID: {{ mercadologica.id}}
+            </span>
             
           </li>
         {% endfor %}
@@ -30,124 +34,137 @@
   {% else %}
         <p>Não tem lista Mercadologica</p>
   {% endif %}
-      <p><a {% comment %}class="related-widget-wrapper-link add-related" id="add_id_classificacao"
-       
-       data-popup="yes" href="/admin/itens/mercadologica/add/?_to_field=id&amp;_popup=1" 
-       {% endcomment %}
-       onclick="novomercadologica('/admin/itens/mercadologica/add/?_to_field=id&amp;_popup=1')"
-       title="Adicionar outro mercadologica"
-       data-bs-toggle="modal" data-bs-target="#myModal">Novo 
-       <img src="/static/admin/img/icon-addlink.svg" alt="Adicionar">
-       </a></p>
     </div>
     <div class="col-sm-7">
       <h2>Arquivo de referencia</h2>
       <ul id="refmerc" class="flex-column" style="list-style-type:none;">
-
+  {% if arqjson %}
+    {% for obj in arqjson %}
+      
+        <li name="id{{ obj.id }}">
+        {% if obj.cod != 0 %}
+          {{obj.cod}} - {% endif %} {{ obj.desc }}
+          {% if obj.ID %}
+            <span class="badge bg-success">{{ obj.ID }}</span>
+          {% else %}
+            <span class="badge bg-danger">{{ obj }}</span>
+          {% endif %}
+          {% if obj.tag %}
+          <span class="badge bg-info">Venda: {{ obj.tag.VENDA }} - Margem: {{ obj.tag.MARGEM }} </span>
+          {% endif %}
+        </li>
+      
+    {% endfor %}
+  {% endif %}
       </ul>
     </div>
   </div>
   <!-- The Modal -->
-<div class="modal" id="myModal">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div id=modalmercadologica></div>
-      <!-- Modal Header ->
-      <div class="modal-header">
+  <div class="modal" id="myModal">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div id=modalmercadologica></div>
+        <!-- Modal Header ->
+        <div class="modal-header">
         <h4 class="modal-title">Modal Heading</h4>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
+        </div>
 
-      <-- Modal body ->
-      <div class="modal-body">
+        <-- Modal body ->
+        <div class="modal-body">
         Modal body..
-      </div>
+        </div>
 
-      <-- Modal footer ->
-      <div class="modal-footer">
+        <-- Modal footer ->
+        <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-      </div-->
+        </div-->
 
+      </div>
     </div>
   </div>
-</div>
   </main>
   <script>
-  {% if arqjson %}
-  async function spa(id, text){
-    let myJson = '/?em=' + text;
-    let retorno = await getJson(myJson);
-    let sp = document.getElementById(id);
-    if (retorno.id) {
-       sp.className = "badge bg-success";
-       sp.innerText = "ID: " + retorno.id 
-    }
-    
-    //return sp;
-  }
-  function fazid(desc, cod){
-    let id = desc+cod;
-    id = id.replaceAll(/\s/g, '');
-    id = id.replaceAll("/","");
-    return id;
-  }
- function sp(desc, cod = 0, sup=0){
-  let sp = document.createElement("span");
-  let text = '{"cod":"' + cod + '","desc":"' + desc + '","sup":"'+ sup + '"}';
-  text = `<a onclick="novomercadologica('/admin/itens/mercadologica/add/?_to_field=id&amp;_popup=1','` + text +`')"
-       title="Adicionar outro mercadologica" data-bs-toggle="modal" data-bs-target="#myModal">` + text +`
-       <img src="/static/admin/img/icon-addlink.svg" alt="Adicionar">
-       </a>`
-  sp.setAttribute('id', fazid(desc, cod));
-  sp.className = "badge bg-danger";
-  sp.innerHTML = text;
-  return sp
- }
-  function uli(desc, cod = 0, sup){
-    let refmer = document.getElementById('refmerc');
-    let lis = document.createElement("li");
-    let tex = document.createTextNode(cod == 0 ? desc : cod + " - " + desc );
-    lis.setAttribute('id', desc);
-    lis.setAttribute('data-bs-toggle', "collapse");
-    //lis.setAttribute('href', "." + cod);
-    cod != 0? lis.setAttribute('class', "collapse "+sup.replace(/\s/g, '')):lis.setAttribute('data-bs-target', "." + desc.replace(/\s/g, ''));
-    lis.appendChild(tex);
-    let spa = sp(desc, cod, sup)
-    lis.appendChild(spa);
-    refmer.appendChild(lis);
-    //console.log(lis);
-  }
-  function arqRef(){
-    let arqmerc = '{{ arqjson }}';
-    arqmerc = arqmerc.replaceAll("&quot;",'"');
-    let listasp=[];
-    const objarq = JSON.parse(arqmerc);
-    for (const cr in objarq) {
-      if (Object.hasOwnProperty.call(objarq, cr)) {
-        const cre = objarq[cr];
-        uli(cr, 0, cr);
-        listasp.push(fazid(cr, 0));
-        for (const gr in cre) {
-          if (Object.hasOwnProperty.call(cre, gr)) {
-            const gru = cre[gr];
-            uli(gr, gru['cod'], cr);
-            listasp.push(fazid(gr, gru['cod']));
-            for (const cat in gru) {
-              if (Object.hasOwnProperty.call(gru, cat)) {
-                const ca = gru[cat];
-                if (cat=="tag" || cat=="cod") {
-                  if (cat=="tag"){
-                  }
-                }else{
-                  uli(cat, ca['cod'], cr);
-                  listasp.push(fazid(cat, ca['cod']));
-                  for (const c in ca) {
-                    if (Object.hasOwnProperty.call(ca, c)) {
-                      if (c=="tag"|| c=="cod") {
-                      }else{
-                        const f = ca[c];
-                        uli(c, f['cod'], cr);
-                        listasp.push(fazid(c, f['cod']));
+    /*  
+    {% if arqjson %}
+
+      async function spa(id, text){
+        let myJson = '/?em=' + text;
+        let retorno = await getJson(myJson);
+        let sp = document.getElementById(id);
+        if (retorno.id) {
+           sp.className = "badge bg-success";
+           sp.innerText = "ID: " + retorno.id 
+        }
+
+        //return sp;
+      }
+      function fazid(desc, cod){
+        let id = desc+cod;
+        id = id.replaceAll(/\s/g, '');
+        id = id.replaceAll("/","");
+        return id;
+      }
+      function sp(desc, cod = 0, sup=0){
+      let sp = document.createElement("span");
+      let id = fazid(desc, cod);
+      let text = '{"cod":"' + cod + '","desc":"' + desc + '","sup":"'+ sup + '"}';
+      text = `<a onclick="novomercadologica('/admin/itens/mercadologica/add/?_to_field=id&amp;_popup=1','`+id+`')"
+           title="Adicionar outro mercadologica" data-bs-toggle="modal" data-bs-target="#myModal">` + text +`
+           <img src="/static/admin/img/icon-addlink.svg" alt="Adicionar">
+           </a>`
+      sp.setAttribute('id', id);
+      sp.className = "badge bg-danger";
+      sp.innerHTML = text;
+      return sp
+      }
+      function uli(desc, cod = 0, sup){
+        let refmer = document.getElementById('refmerc');
+        let lis = document.createElement("li");
+        let tex = document.createTextNode(cod == 0 ? desc : cod + " - " + desc );
+        lis.setAttribute('id', desc);
+        lis.setAttribute('data-bs-toggle', "collapse");
+        //lis.setAttribute('href', "." + cod);
+        cod != 0? lis.setAttribute('class', "collapse "+sup.replace(/\s/g, '')):lis.setAttribute('data-bs-target', "." + desc.replace(/\s/g, ''));
+        lis.appendChild(tex);
+        let spa = sp(desc, cod, sup)
+        lis.appendChild(spa);
+        refmer.appendChild(lis);
+        //console.log(lis);
+      }
+      function arqRef(){
+        let arqmerc = '{{ arqjson }}';
+        arqmerc = arqmerc.replaceAll("&quot;",'"');
+        let listasp=[];
+        const objarq = JSON.parse(arqmerc);
+        for (const cr in objarq) {
+          if (Object.hasOwnProperty.call(objarq, cr)) {
+            const cre = objarq[cr];
+            uli(cr, 0, cr);
+            listasp.push(fazid(cr, 0));
+            for (const gr in cre) {
+              if (Object.hasOwnProperty.call(cre, gr)) {
+                const gru = cre[gr];
+                uli(gr, gru['cod'], cr);
+                listasp.push(fazid(gr, gru['cod']));
+                for (const cat in gru) {
+                  if (Object.hasOwnProperty.call(gru, cat)) {
+                    const ca = gru[cat];
+                    if (cat=="tag" || cat=="cod") {
+                      if (cat=="tag"){
+                      }
+                    }else{
+                      uli(cat, ca['cod'], cr);
+                      listasp.push(fazid(cat, ca['cod']));
+                      for (const c in ca) {
+                        if (Object.hasOwnProperty.call(ca, c)) {
+                          if (c=="tag"|| c=="cod") {
+                          }else{
+                            const f = ca[c];
+                            uli(c, f['cod'], cr);
+                            listasp.push(fazid(c, f['cod']));
+                          }
+                        }
                       }
                     }
                   }
@@ -156,33 +173,70 @@
             }
           }
         }
+        listasp.forEach(element => {
+          let s = document.getElementById(element);
+          let stext = s.innerText;
+          spa(element,stext);
+          //console.log(s +" <=> "+stext);
+        });
       }
-    }
-    listasp.forEach(element => {
-      let s = document.getElementById(element);
-      let stext = s.innerText;
-      spa(element,stext);
-      //console.log(s +" <=> "+stext);
-    });
-  }
-  arqRef()
-  async function atualizamercadologica(link,id){
-    let result = await getText(link);
-    let mod = document.getElementById("modalmercadologica");
-    mod.innerHTML = result;
-    let form = document.getElementById("mercadologica_form");
-    form.setAttribute('action', '/admin/itens/mercadologica/'+id+'/change/');
-  }
-  async function novomercadologica(link,id){
-    let result = await getText(link);
-    let mod = document.getElementById("modalmercadologica");
-    mod.innerHTML = result;
-    let form = document.getElementById("mercadologica_form");
-    form.setAttribute('action', '/admin/itens/mercadologica/add/');
-    console.log(id);
-  }
-  {% endif %}
-
+      arqRef()
+      async function atualizamercadologica(link,id){
+        let result = await getText(link);
+        let mod = document.getElementById("modalmercadologica");
+        mod.innerHTML = result;
+        let form = document.getElementById("mercadologica_form");
+        form.setAttribute('action', '/admin/itens/mercadologica/'+id+'/change/');
+      }
+      async function novomercadologica(link,id){
+        let result = await getText(link);
+        let mod = document.getElementById("modalmercadologica");
+        mod.innerHTML = result;
+        let form = document.getElementById("mercadologica_form");
+        form.setAttribute('action', '/admin/itens/mercadologica/add/');
+        console.log(id);
+      }
+    {% endif %}
+    */
   </script>
   
-  {% endblock %}
+{% endblock %}
+{% block pagination %}
+  {% if is_paginated %}
+    <div class="pagination justify-content-center">
+        <span class="page-item row">
+            {% if page_obj.has_previous %}
+            {% if page_obj.previous_page_number > 1 %}
+            <span class="page-item col"><a class="page-link" 
+                href="{{ request.path }}?page=1{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}">1<<</a></span>
+            {% endif %} 
+            {% if page_obj.previous_page_number > 2 %}
+            <span class="page-item col"><a class="page-link" 
+                href="{{ request.path }}?page={{ page_obj.previous_page_number|add:'-1' }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}">
+                {{ page_obj.previous_page_number|add:'-1' }}</a></span>
+            {% endif %}
+            <span class="page-item col"><a class="page-link" 
+                href="{{ request.path }}?page={{ page_obj.previous_page_number }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}">
+                {{ page_obj.previous_page_number }}</a></span>
+            {% endif %}
+            <span class="page-current page-item active col">
+                <span class="page-current page-link">{{ page_obj.number }}</span>
+            </span>
+            {% if page_obj.has_next %}
+            <span class="page-item col"><a class="page-link"
+                href="{{ request.path }}?page={{ page_obj.next_page_number }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}">{{ page_obj.next_page_number }}</a></span>
+                {% if page_obj.next_page_number < page_obj.paginator.num_pages|add:'-1' %}
+                <span class="page-item col"><a class="page-link"
+                    href="{{ request.path }}?page={{ page_obj.next_page_number|add:'1' }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}">
+                    {{ page_obj.next_page_number|add:'1' }}</a></span>
+                {% endif %}
+                {% if page_obj.next_page_number < page_obj.paginator.num_pages %}
+            <span class="page-item col"><a class="page-link"
+                href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}">
+                >>{{ page_obj.paginator.num_pages }}</a></span>
+            {% endif %}
+            {% endif %}
+        </span>
+    </div>
+  {% endif %}
+{% endblock %}

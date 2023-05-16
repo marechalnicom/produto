@@ -65,16 +65,38 @@
             {% endblock %}
             {% block pagination %}
                 {% if is_paginated %}
-                    <div class="pagination">
-                        <span class="page-links">
+                    <div class="pagination justify-content-center">
+                        <span class="page-item row">
                             {% if page_obj.has_previous %}
-                                <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+                            {% if page_obj.previous_page_number > 1 %}
+                            <span class="page-item col"><a class="page-link" 
+                                href="{{ request.path }}?page=1">1<<</a></span>
+                            {% endif %} 
+                            {% if page_obj.previous_page_number > 2 %}
+                            <span class="page-item col"><a class="page-link" 
+                                href="{{ request.path }}?page={{ page_obj.previous_page_number|add:'-1' }}">
+                                {{ page_obj.previous_page_number|add:'-1' }}</a></span>
                             {% endif %}
-                            <span class="page-current">
-                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                            <span class="page-item col"><a class="page-link" 
+                                href="{{ request.path }}?page={{ page_obj.previous_page_number }}">
+                                {{ page_obj.previous_page_number }}</a></span>
+                            {% endif %}
+                            <span class="page-current page-item active col">
+                                <span class="page-current page-link">{{ page_obj.number }}</span>
                             </span>
                             {% if page_obj.has_next %}
-                                <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
+                            <span class="page-item col"><a class="page-link"
+                                href="{{ request.path }}?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></span>
+                                {% if page_obj.next_page_number < page_obj.paginator.num_pages|add:'-1' %}
+                                <span class="page-item col"><a class="page-link"
+                                    href="{{ request.path }}?page={{ page_obj.next_page_number|add:'1' }}">
+                                    {{ page_obj.next_page_number|add:'1' }}</a></span>
+                                {% endif %}
+                                {% if page_obj.next_page_number < page_obj.paginator.num_pages %}
+                            <span class="page-item col"><a class="page-link"
+                                href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}">
+                                >>{{ page_obj.paginator.num_pages }}</a></span>
+                            {% endif %}
                             {% endif %}
                         </span>
                     </div>
