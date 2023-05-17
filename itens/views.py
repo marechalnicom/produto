@@ -35,9 +35,26 @@ class MercacologicaView(generic.ListView):
     model = Mercadologica
     paginate_by = 30
     filtro=""
+    extrutura=""
 
     def get_queryset(self):
-        return Mercadologica.objects.filter(descricao__contains=self.filtro).order_by('id').values()
+        if self.extrutura == "r" or self.extrutura == "g" or self.extrutura == "c":
+            m = Mercadologica.objects.filter(descricao__contains=self.filtro, superior=0).order_by('id').values()
+            ids=[0]
+            for id in m:
+                if id['superior'] == 0:
+                    ids.append(id['id'])
+        
+            if self.extrutura == "g" or self.extrutura == "c":
+                m = Mercadologica.objects.filter(descricao__contains=self.filtro, superior__in=ids).order_by('id').values()
+                if self.extrutura == "c":
+                    ids=[0]
+                    for id in m:
+                        ids.append(id['id'])
+                    m = Mercadologica.objects.filter(descricao__contains=self.filtro, superior__in=ids).order_by('id').values()
+        else:
+            m = Mercadologica.objects.filter(descricao__contains=self.filtro).order_by('id').values()
+        return m
     
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         try:
@@ -48,6 +65,10 @@ class MercacologicaView(generic.ListView):
             self.filtro = request.GET['nfiltro']
         except:
             self.filtro = ""
+        try:
+            self.extrutura = request.GET['nextrutura']
+        except:
+            self.extrutura = ""
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -56,9 +77,20 @@ class MercacologicaView(generic.ListView):
         obj = lerArquivo(caminho)
         obj = organizaMercadologica(obj)
         #jso = json.dumps(obj)
+        if self.extrutura == "r" or self.extrutura == "g" or self.extrutura == "c":
+            r = [x for x in obj if 0 == x['sup']]
+            if self.extrutura == "g" or self.extrutura == "c":
+                rid = [x['id'] for x in r]
+                g = [x for x in obj if x['sup'] in rid or x['id'] in rid]
+                if self.extrutura == "c":
+                    gid = [x['id'] for x in g]
+                    c = [x for x in obj if x['sup'] in gid or x['id'] in gid]
+                    g = c
+                r = g
+            obj = r
         obj = [x for x in obj if self.filtro.lower() in x['desc'].lower()]
         context['arqjson'] = obj[(context['page_obj'].number-1)*self.paginate_by:context['page_obj'].number*self.paginate_by]
-        context['get'] = {'paginat':self.paginate_by, 'filtro':self.filtro}
+        context['get'] = {'paginat':self.paginate_by, 'filtro':self.filtro, 'extrutura':self.extrutura}
         return context
     
 def lerArquivo(caminho):
