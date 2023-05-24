@@ -1,0 +1,210 @@
+{% extends "itens/home.html" %}
+{% block title %}Soma pães prefeitura{% endblock %}
+{% block content %}
+<h1>Somar Pães</h1>
+<div class="row">
+<form action="" method="get" class="col-md-6">
+    <fieldset name='colet' class="row ">
+    <legend for='colet'>Coletar Código</legend>
+    <div class="col-sm-6">
+    <label for="ilocal">Local:</label>
+    <select name="nlocal" id="ilocal" size="3" class="form-control">
+        {% for l in locais %}
+        <option value="{{ l }}" {% if local and l == local %} selected {% endif %} >{{ l }}</option>
+        {% endfor %}
+    </select>
+    </div>
+    <div class="col-sm-6">
+    <label for="ilocal">Local:</label>
+    <input class="form-control" name="ncoletor" id="icoletor" type="text" placeholder="Código">
+    </div>
+    </fieldset>
+</form>
+    
+    {% if totais %}
+    <ul class="list-group list-group-horizontal col-md-6">
+    {% for total, valor in totais.items %}
+    <li class="list-group-item">{{ total }}: {{ valor.peso }}kg {{ valor.quantidade }}un </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+
+    <fieldset class="col">
+
+    <ul class="list-group list-group-horizontal row">
+        <li class="list-group-item">Códigos Somados</li>
+        {% if codigo %}
+        {% for lista in codigo %}
+        {% if lista.valido %}
+        <li class="list-group-item col-xl-3 col-lg-4 col-md-6 ">
+        <form action="" method="get" class="row">
+            <input type="hidden" name="ntudo{{ forloop.counter }}" id="itudo{{ forloop.counter }}" 
+            value="{{ lista }}">
+            <legend class="">{{ forloop.counter }} Código: {{ lista.codigo }} </legend>
+            <div class="col-6 ">
+            <label for="icodprod{{ forloop.counter }}">Código do produto:</label>
+            <input type="text" class="form-control" name="ncodprod{{ forloop.counter }}" 
+            id="icodprod{{ forloop.counter }}" value="{{ lista.codproduto }}"
+            placeholder="">
+            </div>
+            <div class="col-6 ">
+            <label for="ilocal{{ forloop.counter }}">Local:</label>
+            <select class="form-control" name="nlocal{{ forloop.counter }}" id="ilocal{{ forloop.counter }}" 
+            size="3" class=""
+            placeholder="">
+                {% for l in locais %}
+                <option value="{{ l }}" {% if lista.local and l == lista.local %} selected {% endif %} 
+                >{{ l }}</option>
+                {% endfor %}
+            </select>
+            </div>
+            <div class="col-12 ">
+            <label for="idata{{ forloop.counter }}">Data:</label>
+            <input type="date" class="form-control" name="ndata{{ forloop.counter }}" id="idata{{ forloop.counter }}" 
+            value="{{ lista.data }}">
+            </div>
+            <div class="col-6 ">
+            <label for="ivalorkg{{ forloop.counter }}">Valor do kg:</label>
+            <input type="number" class="form-control" name="nvalorkg{{ forloop.counter }}" id="ivalorkg{{ forloop.counter }}" 
+            value="{{ lista.valorkg }}">
+            </div>
+            <div class="col-6 ">
+            <label for="ivalortotal{{ forloop.counter }}">Valor Total:</label>
+            <input type="number" class="form-control" name="nvalortotal{{ forloop.counter }}" 
+            id="ivalortotal{{ forloop.counter }}" value="{{ lista.valortotal }}">
+            </div>
+            <div class="col-6 ">
+            <label for="ipeso{{ forloop.counter }}">Peso:</label>
+            <input type="number" class="form-control" name="npeso{{ forloop.counter }}" 
+            id="ipeso{{ forloop.counter }}" value="{% widthratio lista.peso 1 1000 %}">
+            </div>
+            <div class="col-6 ">
+            <label for="iquantidade{{ forloop.counter }}">Quantidade:</label>
+            <input type="number" class="form-control" name="nquantidade{{ forloop.counter }}" 
+            id="iquantidade{{ forloop.counter }}" value="{{ lista.quantidade }}">
+            </div>
+            <div class="col-6">
+            <input type="button" class="float-end btn btn-outline-dark" id="iatualiza{{ forloop.counter }}" value="Atualizar"
+            onclick="atualiza({{ forloop.counter }})">
+            </div>
+            <div class="col-6 ">
+            <input type="button" class="btn btn-outline-danger" id="ideleta{{ forloop.counter }}" value="Deletar"
+            onclick="deleta({{ forloop.counter }})">
+            </div>
+        </form>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        <li class="list-group-item">Códigos anulados</li>
+        {% if codigo %}
+        {% for lista in codigo %}
+        {% if lista.valido != True %}
+        <li class="list-group-item col-xl-3 col-lg-4 col-md-6 ">
+        <form action="" method="get" class="row">
+            <input type="hidden" name="ntudo{{ forloop.counter }}" id="itudo{{ forloop.counter }}" 
+            value="{{ lista }}">
+            <legend class="">{{ forloop.counter }} Código: {{ lista.codigo }} </legend>
+            <div class="col-6 ">
+            <label for="icodprod{{ forloop.counter }}">Código do produto:</label>
+            <input type="text" class="form-control" name="ncodprod{{ forloop.counter }}" 
+            id="icodprod{{ forloop.counter }}" value="{{ lista.codproduto }}"
+            placeholder="">
+            </div>
+            <div class="col-6 ">
+            <label for="ilocal{{ forloop.counter }}">Local:</label>
+            <select class="form-control" name="nlocal{{ forloop.counter }}" id="ilocal{{ forloop.counter }}" 
+            size="3" class=""
+            placeholder="">
+                {% for l in locais %}
+                <option value="{{ l }}" {% if lista.local and l == lista.local %} selected {% endif %} 
+                >{{ l }}</option>
+                {% endfor %}
+            </select>
+            </div>
+            <div class="col-12 ">
+            <label for="idata{{ forloop.counter }}">Data:</label>
+            <input type="date" class="form-control" name="ndata{{ forloop.counter }}" id="idata{{ forloop.counter }}" 
+            value="{{ lista.data }}">
+            </div>
+            <div class="col-6 ">
+            <label for="ivalorkg{{ forloop.counter }}">Valor do kg:</label>
+            <input type="number" class="form-control" name="nvalorkg{{ forloop.counter }}" id="ivalorkg{{ forloop.counter }}" 
+            value="{{ lista.valorkg }}">
+            </div>
+            <div class="col-6 ">
+            <label for="ivalortotal{{ forloop.counter }}">Valor Total:</label>
+            <input type="number" class="form-control" name="nvalortotal{{ forloop.counter }}" 
+            id="ivalortotal{{ forloop.counter }}" value="{{ lista.valortotal }}">
+            </div>
+            <div class="col-6 ">
+            <label for="ipeso{{ forloop.counter }}">Peso:</label>
+            <input type="number" class="form-control" name="npeso{{ forloop.counter }}" 
+            id="ipeso{{ forloop.counter }}" value="{% widthratio lista.peso 1 1000 %}">
+            </div>
+            <div class="col-6 ">
+            <label for="iquantidade{{ forloop.counter }}">Quantidade:</label>
+            <input type="number" class="form-control" name="nquantidade{{ forloop.counter }}" 
+            id="iquantidade{{ forloop.counter }}" value="{{ lista.quantidade }}">
+            </div>
+            <div class="col-6">
+            <input type="button" class="float-end btn btn-outline-dark" id="iatualiza{{ forloop.counter }}" value="Atualizar"
+            onclick="atualiza({{ forloop.counter }})">
+            </div>
+            <div class="col-6 ">
+            <input type="button" class="btn btn-outline-danger" id="ideleta{{ forloop.counter }}" value="Ativar"
+            onclick="deleta({{ forloop.counter }})">
+            </div>
+        </form>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </ul>
+    </fieldset>
+    </div>
+
+<script>
+    document.getElementById('icoletor').focus();
+    function compara(params){
+        let tudo = (document.getElementById('itudo'+params).value).replaceAll("'",'"');
+        tudo = tudo.replaceAll('True','true');
+        const obj = JSON.parse(tudo.replaceAll('False','false'));
+        //console.log(typeof obj, obj);
+        let cprod = (document.getElementById('icodprod'+params).value);
+        obj['codproduto'] = obj['codproduto'] != cprod ? cprod : obj['codproduto'];
+        let local = (document.getElementById('ilocal'+params).value);
+        obj['local'] = obj['local'] != local ? local : obj['local'];
+        let data = (document.getElementById('idata'+params).value);
+        obj['data'] = obj['data'] != data ? data : obj['data'];
+        let valor = (document.getElementById('ivalorkg'+params).value);
+        obj['valorkg'] = obj['valorkg'] != valor ? valor : obj['valorkg'];
+        let valort = (document.getElementById('ivalortotal'+params).value);
+        obj['valortotal'] = obj['valortotal'] != valort ? valort : obj['valortotal'];
+        let peso = (document.getElementById('ipeso'+params).value);
+        obj['peso'] = obj['peso'] != peso ? peso : obj['peso'];
+        let quant = (document.getElementById('iquantidade'+params).value);
+        obj['quantidade'] = obj['quantidade'] != quant?  quant : obj['quantidade'];
+        //console.log(typeof obj, obj);
+        return obj;
+    }
+    function atualiza(params) {
+        let obj =compara(params);
+        if (confirm('Atualizar intem '+params)){
+            console.log(window.location.href)
+            let dados = JSON.stringify(obj);
+            window.location.href = "{{ request.path }}?atualiza="+(params-1)+"&dados="+dados;
+        }
+        //else{ alert("cancelado")}
+    }
+    function deleta(params) {
+        let obj =compara(params);
+        if (confirm('Deletar item '+params)){
+            obj['valido']=obj['valido']?false:true;
+            let dados = JSON.stringify(obj);
+            window.location.href = "{{ request.path }}?atualiza="+(params-1)+"&dados="+dados;
+        }
+        //else{ alert("cancelado")}
+    }
+</script>
+{% endblock %}

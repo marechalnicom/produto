@@ -52,7 +52,7 @@
             {% block sidebar %}
                 <ul class="sidebar-nav nav flex-column">
                     <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/?somapaes">Soma pães prefeitura</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'somapaes' %}">Soma pães prefeitura</a></li>
                     <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'mercadologica' %}">Extr. Mercadol. 2020</a></li>
                 </ul>
