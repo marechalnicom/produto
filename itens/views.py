@@ -9,22 +9,41 @@ from itens.models import Item, ItemEmpresa, Empresa, Mercadologica
 from django.views import generic
 import json
 import datetime
+import pandas as pd
 
 # Create your views here.
-def itens(request):
-    template = loader.get_template('itens/home.html')
-    for key in request.GET:
-        print (key ," > ", request.GET[key])
-        if 'codigos' == key:
-            if request.GET[key] != "":
-                atualizararquivo(request.GET[key],'a')
-            template = loader.get_template('itens/'+key+'.txt')
-        if 'somapaes' == key:
-            template = loader.get_template('itens/'+key+'.html')
-        #if 'em' == key:
-        #    resp = consultaMercadologica(request.GET[key])
-        #    return JsonResponse(resp)
-    return HttpResponse(template.render())
+def menu():
+    menu = {
+            'index' : 'Home',
+            'itensemp': 'Itens por Empresa',
+            'mercadologica' : 'Extr. Mercadol. 2020',
+            'somapaes' : 'Soma pães prefeitura',
+            'empresa': 'Empresas'
+        }
+    return menu
+class HomeView(generic.TemplateView):
+    template_name = 'itens/home.html'
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context["menu"] = menu()
+        kwargs=context
+        return super().get_context_data(**kwargs)
+#def itens(request):
+#    template = loader.get_template('itens/home.html')
+#    for key in request.GET:
+#        print (key ," > ", request.GET[key])
+#        if 'codigos' == key:
+#            if request.GET[key] != "":
+#                atualizararquivo(request.GET[key],'a')
+#            template = loader.get_template('itens/'+key+'.txt')
+#        if 'somapaes' == key:
+#            template = loader.get_template('itens/'+key+'.html')
+#        #if 'em' == key:
+#        #    resp = consultaMercadologica(request.GET[key])
+#        #    return JsonResponse(resp)
+#        if 'xlsx' == key:
+#            lerxlsx()
+#    return HttpResponse(template.render())
 def atualizararquivo(codigo,tipo):
     #listdir =os.listdir()
     #print (listdir)
@@ -158,6 +177,7 @@ class MercacologicaView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(MercacologicaView, self).get_context_data(**kwargs)
+        context["menu"] = menu()
         obj = self.lerarquivomercadologica()
         context['arqjson'] = obj[(context['page_obj'].number-1)*self.paginate_by:context['page_obj'].number*self.paginate_by]
         context['get'] = {'paginat':self.paginate_by, 'filtro':self.filtro, 'extrutura':self.extrutura}
@@ -243,7 +263,7 @@ class SomarPaesView(generic.TemplateView):
         return super().get(request, *args, **kwargs)
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(SomarPaesView, self).get_context_data(**kwargs)
-        
+        context["menu"] = menu()
         context['locais'] = ['Saúde', 'CRAS', 'Reciclagem']
         context['totais'] = {'Total':{'peso':0,'quantidade':0}}
         for local in context['locais']:
@@ -251,13 +271,46 @@ class SomarPaesView(generic.TemplateView):
         for codigo in context['codigo']:
             #print(f"context codigo {context['codigo']}")
             if codigo['valido']:
-                context['totais']['Total']['peso'] += codigo['peso'] 
-                context['totais']['Total']['quantidade'] += codigo['quantidade']
-                context['totais'][codigo['local']]['peso'] += codigo['peso'] 
-                context['totais'][codigo['local']]['quantidade'] += codigo['quantidade']
+                context['totais']['Total']['peso'] = round(context['totais']['Total']['peso'],3)+round(codigo['peso'],3) 
+                context['totais']['Total']['quantidade'] += int(codigo['quantidade'])
+                context['totais'][codigo['local']]['peso'] = round(context['totais'][codigo['local']]['peso'],3) + round(codigo['peso'],3) 
+                context['totais'][codigo['local']]['quantidade'] += int(codigo['quantidade'])
+                context['totais']['Total']['peso'] = round(context['totais']['Total']['peso'],3) 
+                context['totais'][codigo['local']]['peso'] = round(context['totais'][codigo['local']]['peso'],3)
         try:
             context['local'] = context['codigo'][-1]['local']
         except:
             print ("não tem local ainda")
         kwargs = context
         return super().get_context_data( **kwargs)
+class ItensEmpresaView(generic.ListView):
+    model = ItemEmpresa
+    def lerxlsx(self):
+        caminho="itens/static/itens/"
+        nomearq="1-78"
+        ext="xlsx"
+        arq = pd.read_excel(f"{caminho}{nomearq}.{ext}",converters={'BARRA':str})
+        dct = arq.to_dict('index')
+        empresa=self.verificaEmpresa( nomearq)
+        return [empresa,dct]
+    
+    def verificaEmpresa(self, empr):
+        empresas = Empresa.objects.filter(cnpj__contains=empr)
+        if empresas.count()==1:
+            for empresa in empresas:
+                return empresa
+        
+    def cadastraProdutos(self):
+        pass
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        kwargs = super(ItensEmpresaView, self).get_context_data(**kwargs)
+        kwargs['menu']=menu() 
+        kwargs['empresa'], kwargs['itens'] = self.lerxlsx()
+        return super().get_context_data(**kwargs)
+class EmpresaView(generic.ListView):
+    model = Empresa
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        kwargs = super(EmpresaView, self).get_context_data(**kwargs)
+        kwargs['menu']=menu()
+        
+        return super().get_context_data(**kwargs)

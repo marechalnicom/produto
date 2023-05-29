@@ -3,9 +3,9 @@ from django.db import models
 # Create your models here.
 class Tag(models.Model):
     #mercadologica = models.ManyToManyField(Mercadologica, blank=True)
-    tipo = models.CharField(max_length=50)
-    tag = models.CharField(max_length=50)
-    detalhe = models.CharField(max_length=50)
+    tipo = models.CharField(max_length=50, null=True, blank=True)
+    tag = models.CharField(max_length=50, null=True, blank=True)
+    detalhe = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self) -> str:
         return f'{self.tipo}: {self.tag}'
 
@@ -51,7 +51,7 @@ class ItemEmpresa(models.Model):
     barras = models.CharField('Código de Barras', max_length=15)
     ativo = models.BooleanField(default=True)
     composicao = models.BooleanField(default=False)
-    ncm = models.CharField('NCM', max_length=8, null=True, blank=True)
+    ncm = models.CharField('NCM', max_length=10, null=True, blank=True)
     classificacao = models.ForeignKey(Mercadologica,verbose_name='Classificação Mercadologica', on_delete=models.SET_NULL, null=True, blank=True)
     tag = models.ManyToManyField(Tag, blank=True)
     def __str__(self) -> str:
