@@ -7,4 +7,5 @@ urlpatterns = [
     path('sp/', views.SomarPaesView.as_view(), name='somapaes'),
     path('ie/', views.ItensEmpresaView.as_view(), name='itensemp'),
     path('empresa/', views.EmpresaView.as_view(), name='empresa'),
+    path('tag/', views.TagView.as_view(), name='tag'),
 ]

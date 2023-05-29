@@ -5,7 +5,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
 from django.http.response import JsonResponse
-from itens.models import Item, ItemEmpresa, Empresa, Mercadologica
+from itens.models import Item, ItemEmpresa, Empresa, Mercadologica, Tag
 from django.views import generic
 import json
 import datetime
@@ -18,7 +18,8 @@ def menu():
             'itensemp': 'Itens por Empresa',
             'mercadologica' : 'Extr. Mercadol. 2020',
             'somapaes' : 'Soma pães prefeitura',
-            'empresa': 'Empresas'
+            'empresa': 'Empresas',
+            'tag':'Tags',
         }
     return menu
 class HomeView(generic.TemplateView):
@@ -313,4 +314,10 @@ class EmpresaView(generic.ListView):
         kwargs = super(EmpresaView, self).get_context_data(**kwargs)
         kwargs['menu']=menu()
         
+        return super().get_context_data(**kwargs)
+class TagView(generic.ListView):
+    model= Tag
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        kwargs = super(TagView, self).get_context_data(**kwargs)
+        kwargs['menu']=menu()
         return super().get_context_data(**kwargs)

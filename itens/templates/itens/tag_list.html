@@ -1,0 +1,14 @@
+{% extends "itens/home.html" %}
+{% block title %}{{ menu.tag }}{% endblock %}
+{% block content %}
+<h1>{{ menu.empresa }}</h1>
+<ul>
+    {% if tag_list %}
+    {% for tag in tag_list %}
+    <li>{{ tag }}</li>
+    {% endfor %}
+    {% endif %}
+    
+</ul>
+<p id="conteudo"></p>
+{% endblock %}
