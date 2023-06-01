@@ -16,7 +16,9 @@ class Mercadologica(models.Model):
     parametro = models.BigIntegerField('Margem Parametro', null=True, blank=True)
     decimo = models.IntegerField('Ultimo Número', null=True, blank=True)
     ncm = models.CharField('NCM de referencia', max_length=8, null=True, blank=True)
-    tag = models.ManyToManyField(Tag, blank=True)
+    tag= models.ManyToManyField(Tag, related_name='tagsmerc')
+    class Meta:
+        ordering = ['pk']
     def __str__(self):
         if self.superior==0:
             return f"{self.descricao}"
@@ -31,7 +33,7 @@ class Item(models.Model):
     composicao = models.BooleanField(default=False)
     ncm = models.CharField('NCM', max_length=8, null=True, blank=True)
     classificacao = models.ForeignKey(Mercadologica, on_delete=models.SET_NULL, null=True, blank=True)
-    tag = models.ManyToManyField(Tag, blank=True)
+    tag = models.ManyToManyField(Tag, related_name='tagsitem')
     def __str__(self) -> str:
         return self.descricao
 
@@ -39,7 +41,7 @@ class Empresa(models.Model):
     rs = models.CharField('Razão Social', max_length=100)
     cnpj = models.CharField("CNPJ", max_length=18, unique=True)
     fantasia = models.CharField(max_length=100)
-    tag = models.ManyToManyField(Tag, blank=True)
+    tag = models.ManyToManyField(Tag, related_name='tagsempr')
     def __str__(self) -> str:
         return f'{self.rs} - {self.cnpj}'
 
@@ -53,7 +55,7 @@ class ItemEmpresa(models.Model):
     composicao = models.BooleanField(default=False)
     ncm = models.CharField('NCM', max_length=10, null=True, blank=True)
     classificacao = models.ForeignKey(Mercadologica,verbose_name='Classificação Mercadologica', on_delete=models.SET_NULL, null=True, blank=True)
-    tag = models.ManyToManyField(Tag, blank=True)
+    tag = models.ManyToManyField(Tag, blank=True, related_name='tagsitemp')
     def __str__(self) -> str:
         return self.descricao
     
