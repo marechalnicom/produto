@@ -1,14 +1,39 @@
 {% extends "itens/home.html" %}
 {% block title %}{{ menu.tag }}{% endblock %}
 {% block content %}
-<h1>{{ menu.empresa }}</h1>
-<ul>
+<h1>{{ menu.tag }}</h1>
+<dl >
     {% if tag_list %}
     {% for tag in tag_list %}
-    <li>{{ tag }}</li>
+    
+    <dd>
+        id:{{ tag.id }} {{ tag }} 
+        {%if tag.tagsmerc.all %} ->
+        <label for="imerc{{ tag.id }}"> Mercadologica:</label>
+        <select id="imerc{{ tag.id }}">
+        {% for merc in tag.tagsmerc.all %}
+        <option>
+        {{ merc }}
+        </option>
+        {% endfor %}
+        </select>
+        {{ tag.tagsmerc.count }}
+        {% endif %}
+        {%if tag.tagsitemp.all %}
+        <label for="iitemp{{ tag.id }}">Itens por Empresa:</label>
+        <select id="iitemp{{ tag.id }}">
+        {% for itp in tag.tagsitemp.all %}
+        <option>
+        {{ itp }}
+        </option>
+        {% endfor %}
+        </select>
+        {{ tag.tagsitemp.count }}
+        {% endif %}
+    </dd>
     {% endfor %}
     {% endif %}
     
-</ul>
+</dl>
 <p id="conteudo"></p>
 {% endblock %}
