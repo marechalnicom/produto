@@ -4,20 +4,43 @@
 <h1>{{ menu.itensemp }}</h1>
     {% if empresa %}<h4>{{ empresa }}</h4>{% endif %}
     <div class="row">
-        <ul class="col">
-        {% if itemempresa_list %}
-        {% for item in itemempresa_list %}
-            <il> {{ item }} </il>
-        {% endfor %}
-        {% endif %}
-        </ul>
-        <ul class="col">
-        {% if itens %}
-        {% for iten in itens.values %}
-        <il> {{ iten }} </il>
-        {% endfor %}
-        {% endif %}
-        </ul>
+     <dl class="col">
+      {% if itemempresa_list %}
+       {% for item in itemempresa_list %}
+            <dd> 
+                id:{{ item.id }} {{ item }}
+                {%if item.tag.all %} ->
+                    <label for="itag{{ tag.id }}"> Tag:</label>
+                    <select id="itag{{ tag.id }}">
+                    {% for tag in item.tag.all %}
+                    <option {% if tag.tipo == 'PRECO_UNITARIO' %}selected{% endif %} >
+                    {{ tag.tag }}
+                    </option>
+                    {% endfor %}
+                    </select>
+                    {{ item.tag.count }}
+                {% endif %}
+            </dd>
+       {% endfor %}
+      {% endif %}
+     </dl>
+     <dl class="" hidden >
+      {% if itens %}
+       {% for key,iten in itens.items %}
+        <dd>
+         {{ key|add:'1' }} {{ iten.Column1 }}
+         <label for="itag{{ key|add:'1' }}"> Tag:</label>
+        <select id="itag{{ key|add:'1' }}">
+         {% for campo, valor in iten.items %}
+         <option {% if campo == 'PRECO_UNITARIO' %}selected{% endif %} >
+         {{ campo }}: {{ valor }}
+         </option>
+         {% endfor %}
+        </select>
+        </dd>
+       {% endfor %}
+      {% endif %}
+     </dl>
     </div>
 <p id="conteudo"></p>
 {% endblock %}
