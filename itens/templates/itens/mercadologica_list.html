@@ -34,7 +34,13 @@
             {{mercadologica.codigo}} - {% endif %}{{mercadologica.descricao}}
             <span class="badge bg-info">ID: {{ mercadologica.id}}
             </span>
-            
+            {% if mercadologica.tag.all %}
+            <span class="badge bg-success">
+            {% for tag in mercadologica.tag.all %}
+            {{ tag }} 
+            {% endfor %}
+            </span>
+            {% endif %}         
           </li>
         {% endfor %}
       </ul>
@@ -51,8 +57,8 @@
         <li name="id{{ obj.id }}" class="id{{ obj.sup }}">
         {% if obj.cod != 0 %}
           {{obj.cod}} - {% endif %} {{ obj.desc }}
-          {% if obj.ID %}
-            <span class="badge bg-success">{{ obj.ID }}</span>
+          {% if obj.id %}
+            <span class="badge bg-success">ID: {{ obj.id }}</span>
           {% else %}
             <span class="badge bg-danger">{{ obj }}</span>
           {% endif %}
