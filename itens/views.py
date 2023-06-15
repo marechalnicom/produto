@@ -53,12 +53,12 @@ def atualizararquivo(codigo,tipo):
 def lerArquivo(caminho):
     arq = open(caminho, 'rb')
     retornab = arq.read()
+    arq.close()
     retorna: str = retornab.decode()
     try:
         retornaobj: object = json.loads(retorna)
     except:
         retornaobj: object = retorna
-    arq.close()
     return retornaobj
 
 def validarcodigoEAN13(codigo):
@@ -85,23 +85,24 @@ class MercacologicaView(generic.ListView):
         finally:
             novomercad.save()
     def consultaMercadologica(self, obj):
-        listamerc = []
-        for ob in obj:
-            #m = Mercadologica.objects.filter(codigo=ob['cod'], descricao=ob['desc']).all()
-            #if 'tag' in ob:
-            #    for tag in ob['tag'].items():
-            #        #print(f'linha 93 obj {tag} mtag{m[0].tag.all()}')
-            #        t = Tag.objects.filter(tipo=tag[0].capitalize(), tag=tag[1], detalhe='Mercadologica')
-            #        if t.exists():
-            #            #print (f"existe t {t}")
-            #            if t[0] not in m[0].tag.all():
-            #                #print (f"\nexiste mtag\n t{t.values()}\n m{m[0].tag.values()}\n ")
-            #                m[0].tag.add(t[0])
-            #        else:
-            #            #ntag = m[0].tag.create(tipo=tag[0].capitalize(), tag=tag[1], detalhe='Mercadologica')
-            #            print(f'nova tag criada e adicionada ')
-            listamerc.append(ob)            
-        return listamerc
+        #listamerc = []
+        #for ob in obj:
+        #    #m = Mercadologica.objects.filter(codigo=ob['cod'], descricao=ob['desc']).all()
+        #    #if 'tag' in ob:
+        #    #    for tag in ob['tag'].items():
+        #    #        #print(f'linha 93 obj {tag} mtag{m[0].tag.all()}')
+        #    #        t = Tag.objects.filter(tipo=tag[0].capitalize(), tag=tag[1], detalhe='Mercadologica')
+        #    #        if t.exists():
+        #    #            #print (f"existe t {t}")
+        #    #            if t[0] not in m[0].tag.all():
+        #    #                #print (f"\nexiste mtag\n t{t.values()}\n m{m[0].tag.values()}\n ")
+        #    #                m[0].tag.add(t[0])
+        #    #        else:
+        #    #            #ntag = m[0].tag.create(tipo=tag[0].capitalize(), tag=tag[1], detalhe='Mercadologica')
+        #    #            print(f'nova tag criada e adicionada ')
+        #    listamerc.append(ob)
+        #print (f"\nlista {listamerc}\n obj {obj}\n")            
+        return obj#listamerc
     def organizaMercadologica(self, obj):
         mercad = []
         id=0
@@ -129,8 +130,8 @@ class MercacologicaView(generic.ListView):
                                 id=id+1
                                 mercad.append({'id':id, 'cod':categorias[categoria]['cod'], 'desc':categoria, 'sup': grupoid})
 
-        listamerc = self.consultaMercadologica(mercad)
-        return (listamerc)
+        #listamerc = self.consultaMercadologica(mercad)
+        return mercad#(listamerc)
     def lerarquivomercadologica(self):
         caminho = 'itens/static/itens/mercadologica.json'
         obj = lerArquivo(caminho)
@@ -370,7 +371,7 @@ class EmpresaView(generic.ListView):
 class TagView(generic.ListView):
     model= Tag
     paginate_by = 25
-    ordering = 'tipo','tag'
+    ordering = 'id'
     def get_queryset(self) -> QuerySet[Any]:
         queryset = super().get_queryset()
         #print (f'query 0 tip {queryset[0].tipo}: tag {queryset[0].tag} - det {queryset[0].detalhe} (merc {queryset[0].tagsmerc.all()})')

@@ -2,25 +2,6 @@
 {% block title %} {{ menu.mercadologica }} {% endblock %}
 {% block content %}
   <h1>Extrutura Mercadologica 2020</h1>
-  <form action="" method="get">
-    <!--input type="hidden" name="page" value="{{ page_obj.number }}"-->
-    <label for="ipaginat">Itens por página:</label>
-    <select name="npaginat" id="ipaginat" onchange="atualiza(this)">
-      <option value="15" {% if get.paginat == 15 %}selected {% endif %} >15</option>
-      <option value="30" {% if get.paginat == 30 %}selected {% endif %}>30</option>
-      <option value="50"{% if get.paginat == 50 %}selected {% endif %}>50</option>
-      <option value="100"{% if get.paginat == 100 %}selected {% endif %}>100</option>
-    </select>
-    <label for="ifiltro">Pesquisar:</label>
-    <input type="search" name="nfiltro" id="ifiltro" value="{% if get.filtro %}{{ get.filtro  }}{% endif %}" onchange="atualiza(this)">
-    <label for="iextrutura">Extrutura:</label>
-    <select name="nextrutura" id="iextrutura" onchange="atualiza(this)">
-      <option value="t" {% if get.extrutura == 't' %}selected {% endif %} >Todos</option>
-      <option value="c"{% if get.extrutura == 'c' %}selected {% endif %}>Categoria</option>
-      <option value="g"{% if get.extrutura == 'g' %}selected {% endif %}>Grupo</option>
-      <option value="r" {% if get.extrutura == 'r' %}selected {% endif %}>Centro de Receitas</option>
-    </select>
-  </form>
   
   <main class="container-fluid">
     <div class="row">
@@ -98,65 +79,7 @@
   </div>
   </main>
   <script>
-    function atualiza(el) {
-      //window.location.replace()
-      if (el.name=="npaginat"){
-      window.location.href = "{{ request.path }}?"+el.name+"="+el.value
-      +"{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}";
-      }
-      if (el.name=="nfiltro"){
-        window.location.href = "{{ request.path }}?"+el.name+"="+el.value
-        +"{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}";
-        console.log(el.name)
-      }
-      if (el.name=="nextrutura"){
-        window.location.href = "{{ request.path }}?"+el.name+"="+el.value
-        +"{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}";
-        console.log(el.name)
-      }
-      
-    }
+    
   </script>
   
-{% endblock %}
-{% block pagination %}
-  {% if is_paginated %}
-    <div class="pagination justify-content-center">
-        <span class="page-item row">
-            {% if page_obj.has_previous %}
-            {% if page_obj.previous_page_number > 1 %}
-            <span class="page-item col"><a class="page-link" 
-                href="{{ request.path }}?page=1{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}">
-                1<<</a></span>
-            {% endif %} 
-            {% if page_obj.previous_page_number > 2 %}
-            <span class="page-item col"><a class="page-link" 
-                href="{{ request.path }}?page={{ page_obj.previous_page_number|add:'-1' }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}">
-                {{ page_obj.previous_page_number|add:'-1' }}</a></span>
-            {% endif %}
-            <span class="page-item col"><a class="page-link" 
-                href="{{ request.path }}?page={{ page_obj.previous_page_number }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}">
-                {{ page_obj.previous_page_number }}</a></span>
-            {% endif %}
-            <span class="page-current page-item active col">
-                <span class="page-current page-link">{{ page_obj.number }}</span>
-            </span>
-            {% if page_obj.has_next %}
-            <span class="page-item col"><a class="page-link"
-                href="{{ request.path }}?page={{ page_obj.next_page_number }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}">
-                {{ page_obj.next_page_number }}</a></span>
-                {% if page_obj.next_page_number < page_obj.paginator.num_pages|add:'-1' %}
-                <span class="page-item col"><a class="page-link"
-                    href="{{ request.path }}?page={{ page_obj.next_page_number|add:'1' }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}">
-                    {{ page_obj.next_page_number|add:'1' }}</a></span>
-                {% endif %}
-                {% if page_obj.next_page_number < page_obj.paginator.num_pages %}
-            <span class="page-item col"><a class="page-link"
-                href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}{% if get.paginat %}&npaginat={{ get.paginat }}{% endif %}{% if get.filtro %}&nfiltro={{ get.filtro }}{% endif %}{% if get.extrutura %}&nextrutura={{ get.extrutura }}{% endif %}">
-                >>{{ page_obj.paginator.num_pages }}</a></span>
-            {% endif %}
-            {% endif %}
-        </span>
-    </div>
-  {% endif %}
 {% endblock %}
